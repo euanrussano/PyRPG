@@ -6,13 +6,14 @@
 1.2 - Install Visual Studio Code
 1.3 - Install Git
 1.4 - Setup your python environment
+1.5 - Creating a Git Repository and Pushing to GitHub
 
 2 - Planning
 2.1 Planning the game
 
 3 - Setting up the Stage
 3.1 - Creating the Game Screen
-3.2 - Creating a Git Repository and Pushing to GitHub
+
 3.3 - Creating the Hero
 3.4 - Creating the Game Session (Presenter) class
 3.5 - Displaying the Hero

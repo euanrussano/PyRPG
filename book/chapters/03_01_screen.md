@@ -92,3 +92,5 @@ Now if you run the code, you should see the main window with the different panel
 Optionally you can refer to the following commit on Github to check your code:
 
 [commit](https://github.com/euanrussano/PyRPG/commit/6ff1661cc152d9dc879559b3d7b4e1ea2bfd3fea)
+
+Do not forget to commit your code and push it to your repository.
