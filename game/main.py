@@ -1,5 +1,7 @@
 import tkinter as tk
 
+from session import GameSession, IGameSession
+
 class GameScreen(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -8,6 +10,9 @@ class GameScreen(tk.Tk):
 
         # Create main layout
         self.create_layout()
+
+        self.session: IGameSession = GameSession(self)
+        self.session.start()
         
     def create_layout(self):
         """Create the main UI layout"""
