@@ -13,11 +13,10 @@
 
 3 - Setting up the Stage
 3.1 - Creating the Game Screen
-
-3.3 - Creating the Hero
-3.4 - Creating the Game Session (Presenter) class
-3.5 - Displaying the Hero
-3.6 - Updating the Hero from the Screen
+3.2 - Creating the Hero
+3.3 - Creating the Game Session (Presenter) class
+3.4 - Displaying the Hero
+3.5 - Updating the Hero from the Screen
 
 4 - Adding a TileMap
 4.1 - Creating the TileMap class
