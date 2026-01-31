@@ -14,9 +14,6 @@ class GameScreen(tk.Tk):
         self.hero_photo = None
         self.tile_size = 64  # Default tile size, will be recalculated after layout
 
-        
-
-
         # Create main layout
         self.create_layout()
 
@@ -30,6 +27,13 @@ class GameScreen(tk.Tk):
         self.load_tileset()
 
         self.session: IGameSession = GameSession(self)
+
+        # Bind key events
+        self.bind("<Up>", self.session.move_up)
+        self.bind("<Down>", self.session.move_down)
+        self.bind("<Left>", self.session.move_left)
+        self.bind("<Right>", self.session.move_right)
+
         self.session.start()
 
     def calculate_tile_size(self):
@@ -63,7 +67,10 @@ class GameScreen(tk.Tk):
         
         if self.hero_sprite:
             self.canvas.delete(self.hero_sprite)
+            print("deleted old sprite")
         self.hero_sprite = self.canvas.create_image(x, y, image=self.hero_photo, anchor='nw')
+        print("created new sprite")
+        
 
     def update_hero_stats(self, name: str, level: int, xp: int, gold: int, energy: int):
         self.hero_name_label.config(text=f"{name}")
