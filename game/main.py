@@ -67,9 +67,7 @@ class GameScreen(tk.Tk):
         
         if self.hero_sprite:
             self.canvas.delete(self.hero_sprite)
-            print("deleted old sprite")
         self.hero_sprite = self.canvas.create_image(x, y, image=self.hero_photo, anchor='nw')
-        print("created new sprite")
         
 
     def update_hero_stats(self, name: str, level: int, xp: int, gold: int, energy: int):
@@ -145,12 +143,6 @@ class GameScreen(tk.Tk):
         self.hero_energy_label = tk.Label(parent, text="<energy here>", **label_config)
         self.hero_energy_label.grid(row=4, column=1, **grid_config)
 
-        tk.Button(parent, text="Free Gold!!", command=self.add_gold).grid(row=5, column=0, columnspan=2, **grid_config)
-
-    def add_gold(self):
-        self.session.add_gold()
-
-
     def create_center_top_panel(self, parent):
         # Give the canvas a reasonable initial size
         self.canvas = tk.Canvas(parent, bg='black', highlightthickness=2, 
@@ -160,3 +152,5 @@ class GameScreen(tk.Tk):
 if __name__ == "__main__":
     view = GameScreen()
     view.mainloop()
+
+    
