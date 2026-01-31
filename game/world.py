@@ -8,6 +8,12 @@ class Location:
         self.y = y
         self.tilemap = tilemap
 
+class LocationNotFoundError(Exception):
+    def __init__(self, x: int, y: int):
+        super().__init__(f"Location ({x}, {y}) does not exist in the world.")
+        self.x = x
+        self.y = y
+
 class World:
     def __init__(self):
         self.locations = []
@@ -18,19 +24,22 @@ class World:
                 raise ValueError(f"Location {location.x}, {location.y} already exists in the world.")
         self.locations.append(location)
 
-    def get_location(self, x: int, y: int) -> Location | None:
+    def has_location(self, x: int, y: int) -> bool:
+        for location in self.locations:
+            if location.x == x and location.y == y:
+                return True
+        return False
+
+    def get_location(self, x: int, y: int) -> Location:
+        if not self.has_location(x, y):
+            raise LocationNotFoundError(x, y)
         for location in self.locations:
             if location.x == x and location.y == y:
                 return location
-        return None
-    
-    def get_location_by_id(self, id: int) -> Location | None:
-        if id < 0 or id >= len(self.locations):
-            return None
-        return self.locations[id]
-    
-    @staticmethod
-    def create() -> 'World':
+        raise LocationNotFoundError(x, y)
+
+class WorldFactory:
+    def create(self) -> World:
         world = World()
         forestFactory = ForestTilemapFactory()
         townFactory = TownTilemapFactory()
@@ -42,5 +51,4 @@ class World:
         world.add_location(town)
         world.add_location(farm)
         return world
-
         
