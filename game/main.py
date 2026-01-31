@@ -4,6 +4,7 @@ from typing import List, Tuple
 from core.hero import Hero
 from core.session import GameSession, IGameSession
 from graphics.spritesheet import Spritesheet
+from tilemap.event import EventTile
 from tilemap.tilemap import Tile
 from tilemap.tileset import get_tileset
 import config
@@ -69,7 +70,7 @@ class GameScreen(tk.Tk):
     
     def render(self, location: Location, hero: Hero):
         tilemap = location.tilemap
-        self.update_tilemap(tilemap.width, tilemap.height, tilemap.tiles)
+        self.update_tilemap(tilemap.width, tilemap.height, tilemap.tiles, tilemap.events)
         self.update_hero_position(hero.x, hero.y)
 
     def to_screen_coords(self, world_x: int, world_y: int) -> Tuple[int, int]:
@@ -95,7 +96,7 @@ class GameScreen(tk.Tk):
         self.hero_gold_label.config(text=f"{hero.gold}")
         self.hero_energy_label.config(text=f"{hero.energy}")
 
-    def update_tilemap(self, width: int, height: int, tiles: List[List[Tile]]):
+    def update_tilemap(self, width: int, height: int, tiles: List[List[Tile]], events: List[List[EventTile]]):
         self.canvas.delete(tk.ALL)
         
         canvas_height = self.canvas.winfo_height()
@@ -103,11 +104,18 @@ class GameScreen(tk.Tk):
             for j in range(height):
                 # drawing coordinates are upside down
                 tile = tiles[i][j]
-                if tile.id == -1:
-                    continue
-                tile_img = self.sprite_sheet.get_sprite(tile.id)
-                x, y = self.to_screen_coords(i, j)
-                self.canvas.create_image(x, y, image=tile_img, anchor='nw')
+                self.draw_tile(tile, i, j)
+                
+                # draw event on top
+                event_tile = events[i][j]
+                if event_tile.tile is not None:
+                    self.draw_tile(event_tile.tile, i, j)
+
+    def draw_tile(self, tile: Tile, world_x: int, world_y: int):
+        if tile.id != -1:
+            tile_img = self.sprite_sheet.get_sprite(tile.id)
+            x, y = self.to_screen_coords(world_x, world_y)
+            self.canvas.create_image(x, y, image=tile_img, anchor='nw')
         
     def create_layout(self):
         """Create the main UI layout"""
