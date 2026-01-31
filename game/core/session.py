@@ -121,7 +121,7 @@ class GameSession(IGameSession):
             event_tile.trigger(self)
 
     def add_message(self, msg: str):
-        # TODO()
-        pass
+        self.hero.add_diary_entry(msg)
+        self.view.update_diary(self.hero)
 
     

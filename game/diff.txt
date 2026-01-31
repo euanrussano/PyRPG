@@ -1,0 +1,193 @@
+commit 9a728b1802c35ee89ce1a1e7e0c495953471590a
+Author: Euan Russano <euanrussano@gmail.com>
+Date:   Sat Jan 31 17:13:19 2026 -0300
+
+    opening door (code)
+
+diff --git a/book/outline.md b/book/outline.md
+index 3c52dce..336481b 100644
+--- a/book/outline.md
++++ b/book/outline.md
+@@ -30,10 +30,9 @@
+ 
+ 5 - Events
+ 5.1 - Laying the ground for events
+-5.2 - Creating the Event Builder
+-5.3 - Opening doors
+-5.4 - Opening chests
+-5.5 - Reading signs
++5.2 - Opening doors
++5.3 - Opening chests
++5.4 - Reading signs
+ 
+ 5 - Items
+ 5.1 Creating the Game Item Factory
+diff --git a/game/core/session.py b/game/core/session.py
+index 48dbd13..6e1e697 100644
+--- a/game/core/session.py
++++ b/game/core/session.py
+@@ -61,6 +61,8 @@ class GameSession(IGameSession):
+         new_x = self.hero.x + dx
+         new_y = self.hero.y + dy
+         
++        # try and trigger event if there is one
++        self.try_trigger_event(new_x, new_y)
+ 
+         if new_x < 0 or new_x >= self.current_location.tilemap.width:
+             self._try_change_location(dx, dy)
+@@ -112,4 +114,14 @@ class GameSession(IGameSession):
+ 
+         self.view.render(new_location, hero)
+ 
++    def try_trigger_event(self, x: int, y: int):
++        tilemap = self.current_location.tilemap
++        event_tile = tilemap.get_event_tile(x, y)
++        if event_tile.has_event():
++            event_tile.trigger(self)
++
++    def add_message(self, msg: str):
++        # TODO()
++        pass
++
+     
+diff --git a/game/main.py b/game/main.py
+index 201c757..a38254b 100644
+--- a/game/main.py
++++ b/game/main.py
+@@ -14,7 +14,7 @@ class GameScreen(tk.Tk):
+     def __init__(self, viewport_width=10, viewport_height=10):
+         super().__init__()
+         self.title("PyRPG")
+-        self.geometry("1200x800")
++        self.geometry("800x800")
+         self.viewport = (viewport_width, viewport_height)
+ 
+         self.hero_sprite = None
+@@ -105,7 +105,7 @@ class GameScreen(tk.Tk):
+                 # drawing coordinates are upside down
+                 tile = tiles[i][j]
+                 self.draw_tile(tile, i, j)
+-                
++
+                 # draw event on top
+                 event_tile = events[i][j]
+                 if event_tile.tile is not None:
+diff --git a/game/tilemap/event.py b/game/tilemap/event.py
+index 70128a6..ed63b79 100644
+--- a/game/tilemap/event.py
++++ b/game/tilemap/event.py
+@@ -1,19 +1,69 @@
+-from abc import ABC
+-from typing import Optional
++from abc import ABC, abstractmethod
++from typing import List, Optional
+ 
+ from tilemap.tileset import Tile
+ 
+ class Event(ABC):
+-    pass
++    def __init__(self):
++        self.owner: Optional['EventTile'] = None
++    @abstractmethod
++    def trigger(self, session):
++        pass
++
++
++class CompositeEvent(Event):
++    def __init__(self, events: List[Event]):
++        super().__init__()
++        self.events = events
++        # TODO(set owner eariler setter)
++
++    def trigger(self, session):
++        for event in self.events:
++            event.owner = self.owner
++            event.trigger(session)
++
++
++class ShowMessageEvent(Event):
++    def __init__(self, message: str):
++        super().__init__()
++        self.message = message
++
++    def trigger(self, session):
++        session.add_message(self.message)
++
++
++class ChangeTileEvent(Event):
++    def __init__(self, tile: Tile):
++        super().__init__()
++        self.tile = tile
++
++    def trigger(self, session):
++        if self.owner :
++            self.owner.tile = self.tile
++        
++
+ 
+ class EventTile:
+     def __init__(self, tile: Optional[Tile] = None, event: Optional[Event] = None):
+-        self.event = event
+         self.tile = tile
++        self.__event = None
++
++        if event is not None:
++            self.set_event(event)
+ 
+     @property
+     def is_walkable(self):
+         if self.tile is None:
+             return True
+-        print("here")
+-        return self.tile.is_walkable
+\ No newline at end of file
++        return self.tile.is_walkable
++    
++    def set_event(self, event: Event):
++        self.__event = event
++        self.__event.owner = self
++
++    def has_event(self):
++        return self.__event is not None
++    
++    def trigger(self, session):
++        if self.__event is not None:
++            self.__event.trigger(session)
+\ No newline at end of file
+diff --git a/game/tilemap/tilemap.py b/game/tilemap/tilemap.py
+index d107ca5..ee0a783 100644
+--- a/game/tilemap/tilemap.py
++++ b/game/tilemap/tilemap.py
+@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
+ from typing import List
+ import random
+ 
+-from tilemap.event import EventTile
++from tilemap.event import ChangeTileEvent, CompositeEvent, EventTile, ShowMessageEvent
+ 
+ from .tile_ids import TREES, TileID
+ from .tileset import Tile, Tileset, get_tileset
+@@ -95,6 +95,11 @@ class TownTilemapFactory(TilemapFactory):
+         if can_open_door:
+             tiles[x+1][y] = tileset.get_tile(TileID.EMPTY)
+             events[x+1][y].tile = tileset.get_tile(TileID.BUILDING_DOOR_CLOSED)
++            event = CompositeEvent([
++                ChangeTileEvent(tileset.get_tile(TileID.BUILDING_DOOR_OPEN)),
++                ShowMessageEvent("You opened the door")
++            ])
++            events[x+1][y].set_event(event)
+         else:
+             id = TileID.BUILDING_DOOR_OPEN if is_door_open else TileID.BUILDING_DOOR_CLOSED
+             tiles[x+1][y] = tileset.get_tile(id)
+@@ -138,6 +143,11 @@ class Tilemap:
+             return Tile(TileID.EMPTY)
+         return self.tiles[x][y]
+     
++    def get_event_tile(self, x: int, y: int):
++        if not self.has_tile(x, y): 
++            return EventTile()
++        return self.events[x][y]
++    
+     def is_blocked(self, new_x: int, new_y: int):
+         if not self.has_tile(new_x, new_y): 
+             return True

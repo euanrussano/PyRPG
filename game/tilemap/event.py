@@ -67,3 +67,6 @@ class EventTile:
     def trigger(self, session):
         if self.__event is not None:
             self.__event.trigger(session)
+
+        # for now events run once
+        self.__event = None

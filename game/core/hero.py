@@ -8,3 +8,11 @@ class Hero:
         self.energy = self.max_energy
         self.x = 5
         self.y = 5
+        self.__diary = []
+
+    @property
+    def diary(self):
+        return self.__diary
+
+    def add_diary_entry(self, entry):
+        self.__diary.append(entry)

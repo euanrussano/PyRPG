@@ -96,6 +96,11 @@ class GameScreen(tk.Tk):
         self.hero_gold_label.config(text=f"{hero.gold}")
         self.hero_energy_label.config(text=f"{hero.energy}")
 
+    def update_diary(self, hero: Hero):
+        self.diary_listbox.delete(0, tk.END)
+        for entry in hero.diary:
+            self.diary_listbox.insert(tk.END, entry)
+
     def update_tilemap(self, width: int, height: int, tiles: List[List[Tile]], events: List[List[EventTile]]):
         self.canvas.delete(tk.ALL)
         
@@ -151,7 +156,7 @@ class GameScreen(tk.Tk):
 
         self.create_center_top_panel(center_top_panel)
         self.create_left_top_panel(left_top_panel)
-        # self.create_right_top_panel(right_top_panel)
+        self.create_right_top_panel(right_top_panel)
         # self.create_left_bottom_panel(left_bottom_panel)
         # self.create_center_bottom_panel(center_bottom_panel)
 
@@ -188,6 +193,10 @@ class GameScreen(tk.Tk):
         self.canvas = tk.Canvas(parent, bg='black', highlightthickness=2, 
                                highlightbackground='black')
         self.canvas.pack(fill=tk.BOTH, expand=True, pady=10)
+
+    def create_right_top_panel(self, parent):
+        self.diary_listbox = tk.Listbox(parent)
+        self.diary_listbox.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
 if __name__ == "__main__":
     view = GameScreen()
