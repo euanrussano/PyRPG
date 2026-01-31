@@ -2,12 +2,12 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from tilemap import Tilemap, TilemapLoader
-from world import Location, World
+from tilemap.tilemap import Tilemap, TilemapLoader
+from .world import Location, World, WorldFactory
 if TYPE_CHECKING:
     from main import GameScreen
 
-from hero import Hero
+from .hero import Hero
 
 
 # presenter interface: defines the methods called from view to presenter
@@ -38,7 +38,7 @@ class GameSession(IGameSession):
         super().__init__()
         self.hero: Hero = Hero("John")
         self.view = view
-        self.world = World.create()
+        self.world = WorldFactory().create()
         loc = self.world.get_location(0, 0)
         assert loc is not None
         self.current_location: Location = loc

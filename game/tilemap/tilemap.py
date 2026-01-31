@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List
 import random
 
-from tile_ids import TREES, TileID
-from tileset import Tile, Tileset, get_tileset
+from .tile_ids import TREES, TileID
+from .tileset import Tile, Tileset, get_tileset
 
 class TilemapFactory(ABC):
     @abstractmethod

@@ -1,4 +1,4 @@
-from tilemap import Tilemap, ForestTilemapFactory, TownTilemapFactory
+from tilemap.tilemap import Tilemap, ForestTilemapFactory, TownTilemapFactory
 
 
 class Location:

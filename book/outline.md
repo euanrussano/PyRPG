@@ -24,8 +24,9 @@
 4.2 - Creating the World
 4.3 - Cleaning up Tiles and Refactoring
 4.4 - Moving around the map
-4.4 - Moving between maps
-4.4 - Improving the World - Factory and Guard Clauses
+4.5 - Moving between maps
+4.6 - Improving the World - Factory and Guard Clauses
+4.7 - Restructuring the project into modules
 
 5 - Events
 5.1 - Creating the Event Factory

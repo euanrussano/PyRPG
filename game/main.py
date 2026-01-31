@@ -1,14 +1,13 @@
 import tkinter as tk
 from typing import List, Tuple
-from PIL import Image, ImageTk
 
-from hero import Hero
-from session import GameSession, IGameSession
-from spritesheet import Spritesheet
-from tilemap import Tile, TilemapLoader
-from tileset import Tileset, get_tileset
+from core.hero import Hero
+from core.session import GameSession, IGameSession
+from graphics.spritesheet import Spritesheet
+from tilemap.tilemap import Tile
+from tilemap.tileset import get_tileset
 import config
-from world import Location
+from core.world import Location
 
 class GameScreen(tk.Tk):
     def __init__(self, viewport_width=10, viewport_height=10):

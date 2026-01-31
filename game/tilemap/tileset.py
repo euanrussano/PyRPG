@@ -1,6 +1,6 @@
-# tileset.py
-from tile_ids import TileID
 from typing import Dict, Optional
+
+from .tile_ids import TileID
 
 class Tile:
     def __init__(self, id: int, is_walkable: bool = True):
