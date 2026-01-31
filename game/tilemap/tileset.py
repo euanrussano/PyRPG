@@ -10,7 +10,7 @@ class Tile:
 class Tileset:
     _instance: Optional['Tileset'] = None
     
-    def __init__(self):
+    def __init__(self) -> None:
         if Tileset._instance is not None:
             raise RuntimeError("Tileset is a singleton. Use Tileset.get_instance()")
         
@@ -24,7 +24,7 @@ class Tileset:
             cls._instance = cls()
         return cls._instance
 
-    def create_tiles(self):
+    def create_tiles(self) -> None:
         """Register all tiles with their metadata"""
         tiles_data = [
             # Special
@@ -65,6 +65,9 @@ class Tileset:
             
             # Chest (non-walkable)
             (TileID.CHEST_CLOSED, False),
+
+            # Sign (non-walkable)
+            (TileID.SIGN, False),
         ]
         
         for tile_id, walkable in tiles_data:

@@ -18,10 +18,6 @@ class TileID(IntEnum):
     FOLK_5 = 8
     FOLK_6 = 14
     FOLK_7 = 15
-
-
-
-
     
     # Building
     BUILDING_CORNER_TL = 0
@@ -42,6 +38,7 @@ class TileID(IntEnum):
     FURNITURE_BED = 62
 
     CHEST_CLOSED = 57
+    SIGN = 31
 
     
 

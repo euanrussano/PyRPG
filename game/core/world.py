@@ -46,7 +46,7 @@ class WorldFactory:
         # forest
         forest = Location("Farm", 0, -1, forestFactory.create(place_random_chests=True))
         town = Location("Town",0, 0, townFactory.create())
-        farm = Location("Forest", 1, 0, forestFactory.create())
+        farm = Location("Forest", 1, 0, forestFactory.create(place_sign=True))
         world.add_location(forest)
         world.add_location(town)
         world.add_location(farm)

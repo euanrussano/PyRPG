@@ -51,9 +51,10 @@ class GiveGoldEvent(Event):
         session.add_gold(self.amount)
 
 class EventTile:
-    def __init__(self, tile: Optional[Tile] = None, event: Optional[Event] = None):
+    def __init__(self, tile: Optional[Tile] = None, event: Optional[Event] = None, run_once:bool=True):
         self.tile = tile
         self.__event = None
+        self.run_once = run_once
 
         if event is not None:
             self.set_event(event)
@@ -76,4 +77,5 @@ class EventTile:
             self.__event.trigger(session)
 
         # for now events run once
-        self.__event = None
+        if self.run_once:
+            self.__event = None

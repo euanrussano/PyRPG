@@ -12,7 +12,8 @@ class TilemapFactory(ABC):
     def create(self) -> 'Tilemap':
         pass
 
-    def create_empty_tiles(self, width: int, height: int) -> List[List['Tile']]:
+    @staticmethod
+    def create_empty_tiles(width: int, height: int) -> List[List['Tile']]:
         tileset: Tileset = get_tileset()
         tiles = []
         for _ in range(width):    
@@ -21,8 +22,9 @@ class TilemapFactory(ABC):
                 row.append(tileset.get_tile(TileID.EMPTY))
             tiles.append(row)
         return tiles
-    
-    def create_empty_events(self, width: int, height: int) -> List[List['EventTile']]:
+
+    @staticmethod
+    def create_empty_events(width: int, height: int) -> List[List['EventTile']]:
         events = []
         for _ in range(width):    
             row = []
@@ -32,7 +34,7 @@ class TilemapFactory(ABC):
         return events
 
 class ForestTilemapFactory(TilemapFactory):
-    def create(self, place_random_chests:bool = False) -> 'Tilemap':
+    def create(self, place_random_chests:bool = False, place_sign:bool = False) -> 'Tilemap':
         
         random.seed(1)
 
@@ -40,7 +42,7 @@ class ForestTilemapFactory(TilemapFactory):
         height = 10
         tileset: Tileset = get_tileset()
         tiles = []
-        events = self.create_empty_events(width, height)
+        events = TilemapFactory.create_empty_events(width, height)
         for i in range(width):    
             row = []
             for j in range(height):
@@ -58,6 +60,15 @@ class ForestTilemapFactory(TilemapFactory):
                             ChangeTileEvent(tileset.get_tile(TileID.EMPTY)),
                         ])  
                         events[i][j].set_event(event)
+                elif place_sign:
+                    if random.random() < 0.1:
+                        print("placing sign")
+                        events[i][j].run_once = False
+                        events[i][j].tile = tileset.get_tile(TileID.SIGN)
+                        event = ShowMessageEvent("You found a sign!")
+                        events[i][j].set_event(event)
+                        # only place max one sign
+                        place_sign = False
                 
                 row.append(tileset.get_tile(id))
             tiles.append(row)
