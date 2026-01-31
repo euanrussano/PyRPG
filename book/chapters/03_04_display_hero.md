@@ -1,3 +1,10 @@
+# 3.4 - Displaying the Hero
+
+- Set a position for the hero
+- Draw the hero at that position in the screen canvas
+- Show the hero's stats in the stats panel
+
+```python
 import tkinter as tk
 from PIL import Image, ImageTk
 
@@ -13,9 +20,6 @@ class GameScreen(tk.Tk):
         self.hero_sprite = None
         self.hero_photo = None
         self.tile_size = 64  # Default tile size, will be recalculated after layout
-
-        
-
 
         # Create main layout
         self.create_layout()
@@ -153,3 +157,19 @@ class GameScreen(tk.Tk):
 if __name__ == "__main__":
     view = GameScreen()
     view.mainloop()
+```
+
+```python
+class GameScreen(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("PyRPG")
+        self.geometry("1200x800")
+        
+        # Create main layout
+        self.create_layout()
+        
+        # Create the game session
+        self.session = GameSession(self)
+        self.session.start()
+```
