@@ -39,7 +39,7 @@ class IGameSession(ABC):
 class GameSession(IGameSession):
     def __init__(self, view: GameScreen) -> None:
         super().__init__()
-        self.hero: Hero | None = None
+        self.hero: Hero = Hero("John")
         self.view = view
         self.world = World.create()
         loc = self.world.get_location(0, 0)
@@ -47,13 +47,8 @@ class GameSession(IGameSession):
         self.current_location: Location = loc
 
     def start(self):
-        tilemap = self.current_location.tilemap
-        self.view.update_tilemap(tilemap.width, tilemap.height, tilemap.tiles)
+        self.view.render(self.current_location, self.hero)
         
-        self.hero = Hero("John")
-        self.view.update_hero_position(self.hero.x, self.hero.y)
-        self.view.update_hero_stats(self.hero.name, self.hero.level, self.hero.xp, self.hero.gold, self.hero.energy)
-
     def move_hero(self, dx: int, dy: int):
         if self.hero is None:
             return
@@ -62,17 +57,23 @@ class GameSession(IGameSession):
         if abs(dx) + abs(dy) != 1:
             return
         
+        new_x = self.hero.x + dx
+        new_y = self.hero.y + dy
+
+        if self.current_location.tilemap.is_blocked(new_x, new_y):
+            return
+        
         self.hero.x += dx
         self.hero.y += dy
         
-        self.view.render()
+        self.view.render(self.current_location, self.hero)
 
     def move_down(self, event):
-        self.move_hero(0, 1)
+        self.move_hero(0, -1)
         
 
     def move_up(self, event):
-        self.move_hero(0, -1)
+        self.move_hero(0, 1)
         
     def move_left(self, event):
         self.move_hero(-1, 0)

@@ -1,11 +1,12 @@
 import tkinter as tk
-from typing import List
+from typing import List, Tuple
 from PIL import Image, ImageTk
 
 from hero import Hero
 from session import GameSession, IGameSession
+from spritesheet import Spritesheet
 from tilemap import Tile, TilemapLoader
-from tileset import Tileset
+from tileset import Tileset, get_tileset
 import config
 from world import Location
 
@@ -29,7 +30,8 @@ class GameScreen(tk.Tk):
         self.calculate_tile_size()
 
         # Create tileset
-        self.tileset = Tileset(self.tile_size)        
+        self.sprite_sheet = Spritesheet("assets/tileset.png", self.tile_size)
+        self.tileset = get_tileset()      
 
         # Load sprites (now tile_size has a proper value)
         self.load_hero_sprite()
@@ -64,16 +66,23 @@ class GameScreen(tk.Tk):
         print(f"Tile size: {self.tile_size}")
 
     def load_hero_sprite(self):
-        self.hero_photo = self.tileset.get_tile(config.hero_sprite)
+        self.hero_photo = self.sprite_sheet.get_sprite(config.hero_sprite)
     
     def render(self, location: Location, hero: Hero):
-        self.update_tilemap(location.tilemap.width, location.tilemap.height, location.tilemap.tiles)
+        tilemap = location.tilemap
+        self.update_tilemap(tilemap.width, tilemap.height, tilemap.tiles)
         self.update_hero_position(hero.x, hero.y)
+
+    def to_screen_coords(self, world_x: int, world_y: int) -> Tuple[int, int]:
+        """Converts canvas coordinates to tile coordinates"""
+        height = self.canvas.winfo_height()
+        x = world_x * self.tile_size
+        y = height - world_y * self.tile_size
+        return (x, y)
 
     def update_hero_position(self, world_x: int, world_y: int):
         """Update hero sprite position"""
-        x = world_x * self.tile_size
-        y = world_y * self.tile_size
+        x, y = self.to_screen_coords(world_x, world_y)
         
         if self.hero_sprite:
             self.canvas.delete(self.hero_sprite)
@@ -88,17 +97,18 @@ class GameScreen(tk.Tk):
         self.hero_energy_label.config(text=f"{energy}")
 
     def update_tilemap(self, width: int, height: int, tiles: List[List[Tile]]):
-        print("update tilemap")
         self.canvas.delete(tk.ALL)
         
-        for x in range(width):
-            for y in range(height):
+        canvas_height = self.canvas.winfo_height()
+        for i in range(width):
+            for j in range(height):
                 # drawing coordinates are upside down
-                tile = tiles[x][height - y-1]
+                tile = tiles[i][j]
                 if tile.id == -1:
                     continue
-                tile_img = self.tileset.get_tile(tile.id)
-                self.canvas.create_image(x * self.tile_size, y * self.tile_size, image=tile_img, anchor='nw')
+                tile_img = self.sprite_sheet.get_sprite(tile.id)
+                x, y = self.to_screen_coords(i, j)
+                self.canvas.create_image(x, y, image=tile_img, anchor='nw')
         
     def create_layout(self):
         """Create the main UI layout"""
