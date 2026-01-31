@@ -33,9 +33,11 @@
 5.2 - Opening doors
 5.3 - Opening chests
 5.4 - Reading signs
+5.5 - Refactoring and cleanup
 
 5 - Items
-5.1 Creating the Game Item Factory
+5.1 Creating the Game Item Builder
+5.2 Finding a lost key in the farm
 5.2 Hero Inventory
 
 7 - Town Folks

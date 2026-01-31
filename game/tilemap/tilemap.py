@@ -62,7 +62,6 @@ class ForestTilemapFactory(TilemapFactory):
                         events[i][j].set_event(event)
                 elif place_sign:
                     if random.random() < 0.1:
-                        print("placing sign")
                         events[i][j].run_once = False
                         events[i][j].tile = tileset.get_tile(TileID.SIGN)
                         event = ShowMessageEvent("You found a sign!")

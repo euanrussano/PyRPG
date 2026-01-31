@@ -2,6 +2,7 @@ import tkinter as tk
 from typing import List, Tuple
 
 from core.hero import Hero
+from core.itemdefinition import ItemRepository
 from core.session import GameSession, IGameSession
 from graphics.spritesheet import Spritesheet
 from tilemap.event import EventTile
@@ -199,6 +200,7 @@ class GameScreen(tk.Tk):
         self.diary_listbox.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
 if __name__ == "__main__":
+    ItemRepository.get_instance().load_data()
     view = GameScreen()
     view.mainloop()
 
