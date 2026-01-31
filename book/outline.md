@@ -16,7 +16,7 @@
 3.2 - Creating the Hero
 3.3 - Creating the Game Session (Presenter) class
 3.4 - Displaying the Hero
-3.5 - Updating the Hero from the Screen
+3.5 - Moving the Hero around
 
 4 - Adding a TileMap
 4.1 - Creating the TileMap class
