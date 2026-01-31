@@ -29,7 +29,11 @@
 4.7 - Restructuring the project into modules
 
 5 - Events
-5.1 - Creating the Event Factory
+5.1 - Laying the ground for events
+5.2 - Creating the Event Builder
+5.3 - Opening doors
+5.4 - Opening chests
+5.5 - Reading signs
 
 5 - Items
 5.1 Creating the Game Item Factory
