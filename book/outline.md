@@ -17,6 +17,7 @@
 3.3 - Creating the Game Session (Presenter) class
 3.4 - Displaying the Hero
 3.5 - Moving the Hero around
+3.6 - Code Cleanup: Removing Debug and Test Code
 
 4 - Adding a TileMap
 4.1 - Creating the TileMap class

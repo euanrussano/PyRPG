@@ -1,0 +1,1 @@
+hero_sprite = 5

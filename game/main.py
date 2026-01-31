@@ -1,7 +1,11 @@
 import tkinter as tk
+from typing import List
 from PIL import Image, ImageTk
 
 from session import GameSession, IGameSession
+from tilemap import Tile, TilemapFactory
+from tileset import Tileset
+import config
 
 class GameScreen(tk.Tk):
     def __init__(self, viewport_width=10, viewport_height=10):
@@ -11,7 +15,6 @@ class GameScreen(tk.Tk):
         self.viewport = (viewport_width, viewport_height)
 
         self.hero_sprite = None
-        self.hero_photo = None
         self.tile_size = 64  # Default tile size, will be recalculated after layout
 
         # Create main layout
@@ -23,8 +26,11 @@ class GameScreen(tk.Tk):
         # Now calculate the actual tile size based on rendered canvas
         self.calculate_tile_size()
 
+        # Create tileset
+        self.tileset = Tileset(self.tile_size)        
+
         # Load sprites (now tile_size has a proper value)
-        self.load_tileset()
+        self.load_hero_sprite()
 
         self.session: IGameSession = GameSession(self)
 
@@ -55,10 +61,8 @@ class GameScreen(tk.Tk):
         print(f"Viewport: {self.viewport}")
         print(f"Tile size: {self.tile_size}")
 
-    def load_tileset(self):
-        tileset: Image.Image = Image.open("assets/tileset.png")
-        hero_img = tileset.crop((5*8, 0, 6*8, 8)).resize((self.tile_size, self.tile_size))
-        self.hero_photo = ImageTk.PhotoImage(hero_img)
+    def load_hero_sprite(self):
+        self.hero_photo = self.tileset.get_tile(config.hero_sprite)
     
     def update_hero_position(self, world_x: int, world_y: int):
         """Update hero sprite position"""
@@ -76,6 +80,16 @@ class GameScreen(tk.Tk):
         self.hero_xp_label.config(text=f"{xp}")
         self.hero_gold_label.config(text=f"{gold}")
         self.hero_energy_label.config(text=f"{energy}")
+
+    def update_tilemap(self, width: int, height: int, tiles: List[List[Tile]]):
+        self.canvas.delete(tk.ALL)
+        for x in range(width):
+            for y in range(height):
+                tile = tiles[x][y]
+                if tile.id == -1:
+                    continue
+                tile_img = self.tileset.get_tile(tile.id)
+                self.canvas.create_image(x * self.tile_size, y * self.tile_size, image=tile_img, anchor='nw')
         
     def create_layout(self):
         """Create the main UI layout"""
