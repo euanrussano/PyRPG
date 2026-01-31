@@ -32,9 +32,6 @@ class IGameSession(ABC):
     def move_right(self, event):
         pass
 
-    @abstractmethod
-    def change_location(self, loc_id: int):
-        pass
 
 class GameSession(IGameSession):
     def __init__(self, view: GameScreen) -> None:
@@ -47,19 +44,31 @@ class GameSession(IGameSession):
         self.current_location: Location = loc
 
     def start(self):
+        self.view.update_hero_stats(self.hero)
         self.view.render(self.current_location, self.hero)
         
     def move_hero(self, dx: int, dy: int):
         if self.hero is None:
             return
+        # can only move by one tile
         if abs(dx) > 1 or abs(dy) > 1:
             return
+        # do not allow diagonal movement
         if abs(dx) + abs(dy) != 1:
             return
         
+        # "predict" new position for checking
         new_x = self.hero.x + dx
         new_y = self.hero.y + dy
+        
 
+        if new_x < 0 or new_x >= self.current_location.tilemap.width:
+            self._try_change_location(dx, dy)
+            return
+        elif new_y < 0 or new_y >= self.current_location.tilemap.height:
+            self._try_change_location(dx, dy)
+            return
+        
         if self.current_location.tilemap.is_blocked(new_x, new_y):
             return
         
@@ -81,10 +90,26 @@ class GameSession(IGameSession):
     def move_right(self, event):
         self.move_hero(1, 0)
 
-    def change_location(self, loc_id: int):
-        loc = self.world.get_location_by_id(loc_id)
-        if loc is None:
+    def _try_change_location(self, dx: int, dy: int) -> None:
+        location = self.current_location
+        hero = self.hero
+
+        new_global_x = location.x + dx
+        new_global_y = location.y + dy
+
+        new_location = self.world.get_location(new_global_x, new_global_y)
+        if new_location is None:
             return
-        self.current_location = loc
-        self.view.render(self.current_location, self.hero)
+
+        self.current_location = new_location
+
+        tilemap = new_location.tilemap
+
+        if dx != 0:
+            hero.x = 0 if dx > 0 else tilemap.width - 1
+        if dy != 0:
+            hero.y = 0 if dy > 0 else tilemap.height - 1
+
+        self.view.render(new_location, hero)
+
     

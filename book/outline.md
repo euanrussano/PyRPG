@@ -22,7 +22,8 @@
 4 - Adding a TileMap
 4.1 - Creating the TileMap class
 4.2 - Creating the World
-4.3 - Moving around the map
+4.3 - Cleaning up Tiles and Refactoring
+4.4 - Moving around the map
 4.4 - Moving between maps
 4.4 - Improving the World - Factory and Guard Clauses
 

@@ -89,16 +89,21 @@ class TilemapLoader:
                 tiles.append(row)
         return Tilemap(tiles)
     
-
-
 class Tilemap:
     def __init__(self, tiles: List[List[Tile]]):
         self.tiles = tiles
         self.width = len(tiles)
         self.height = len(tiles[0])
 
+    def has_tile(self, x: int, y: int):
+        return x >= 0 and x < self.width and y >= 0 and y < self.height
+
     def get_tile(self, x: int, y: int):
+        if not self.has_tile(x, y): 
+            return Tile(TileID.EMPTY)
         return self.tiles[x][y]
     
     def is_blocked(self, new_x: int, new_y: int):
+        if not self.has_tile(new_x, new_y): 
+            return True
         return not self.get_tile(new_x, new_y).is_walkable

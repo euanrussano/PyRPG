@@ -77,7 +77,7 @@ class GameScreen(tk.Tk):
         """Converts canvas coordinates to tile coordinates"""
         height = self.canvas.winfo_height()
         x = world_x * self.tile_size
-        y = height - world_y * self.tile_size
+        y = height - world_y * self.tile_size -self.tile_size
         return (x, y)
 
     def update_hero_position(self, world_x: int, world_y: int):
@@ -89,12 +89,12 @@ class GameScreen(tk.Tk):
         self.hero_sprite = self.canvas.create_image(x, y, image=self.hero_photo, anchor='nw')
         
 
-    def update_hero_stats(self, name: str, level: int, xp: int, gold: int, energy: int):
-        self.hero_name_label.config(text=f"{name}")
-        self.hero_level_label.config(text=f"{level}")
-        self.hero_xp_label.config(text=f"{xp}")
-        self.hero_gold_label.config(text=f"{gold}")
-        self.hero_energy_label.config(text=f"{energy}")
+    def update_hero_stats(self, hero: Hero):
+        self.hero_name_label.config(text=f"{hero.name}")
+        self.hero_level_label.config(text=f"{hero.level}")
+        self.hero_xp_label.config(text=f"{hero.xp}")
+        self.hero_gold_label.config(text=f"{hero.gold}")
+        self.hero_energy_label.config(text=f"{hero.energy}")
 
     def update_tilemap(self, width: int, height: int, tiles: List[List[Tile]]):
         self.canvas.delete(tk.ALL)
@@ -175,18 +175,6 @@ class GameScreen(tk.Tk):
         tk.Label(parent, text="Energy: ", **label_config).grid(row=4, column=0, **grid_config)
         self.hero_energy_label = tk.Label(parent, text="<energy here>", **label_config)
         self.hero_energy_label.grid(row=4, column=1, **grid_config)
-
-        map_selection_label = tk.Label(parent, text="Select map:", **label_config)
-        map_selection_label.grid(row=5, column=0, **grid_config)
-        map_options = ["0", "1", "2"]
-        self.map_selection = tk.StringVar()
-        self.map_selection.set(map_options[0])
-        map_selection_menu = tk.OptionMenu(parent, self.map_selection, *map_options, command=self.change_map)
-        map_selection_menu.grid(row=5, column=1, **grid_config)
-
-    def change_map(self, event):
-        loc_id = int(self.map_selection.get())
-        self.session.change_location(loc_id)
 
     def create_center_top_panel(self, parent):
         # Give the canvas a reasonable initial size

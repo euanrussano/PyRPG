@@ -35,11 +35,12 @@ class World:
         forestFactory = ForestTilemapFactory()
         townFactory = TownTilemapFactory()
         # forest
-        world.add_location(Location("Forest", 0, -1, forestFactory.create()))
-        # town
-        world.add_location(Location("Town",0, 0, townFactory.create()))
-        # farm
-        world.add_location(Location("Farm", 1, 0, forestFactory.create()))
+        forest = Location("Forest", 0, -1, forestFactory.create())
+        town = Location("Town",0, 0, townFactory.create())
+        farm = Location("Farm", 1, 0, forestFactory.create())
+        world.add_location(forest)
+        world.add_location(town)
+        world.add_location(farm)
         return world
 
         
