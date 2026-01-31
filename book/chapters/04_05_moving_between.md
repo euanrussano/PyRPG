@@ -1,4 +1,4 @@
-# 4.4 – Moving Between Maps
+# 4.5 – Moving Between Maps
 
 In this lesson, we’ll make our world feel bigger by allowing the hero to move **between maps** automatically.
 
