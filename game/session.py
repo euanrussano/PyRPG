@@ -2,7 +2,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from tilemap import Tilemap, TilemapFactory
+from tilemap import Tilemap, TilemapLoader
+from world import Location, World
 if TYPE_CHECKING:
     from main import GameScreen
 
@@ -31,17 +32,23 @@ class IGameSession(ABC):
     def move_right(self, event):
         pass
 
+    @abstractmethod
+    def change_location(self, loc_id: int):
+        pass
+
 class GameSession(IGameSession):
-    def __init__(self, view: GameScreen, map_file: str = "assets/forest.csv") -> None:
+    def __init__(self, view: GameScreen) -> None:
         super().__init__()
-        self.tilemap: Tilemap | None = None
         self.hero: Hero | None = None
         self.view = view
-        self.map_file = map_file
+        self.world = World.create()
+        loc = self.world.get_location(0, 0)
+        assert loc is not None
+        self.current_location: Location = loc
 
     def start(self):
-        self.tilemap = TilemapFactory().create_tilemap(self.map_file)
-        self.view.update_tilemap(self.tilemap.width, self.tilemap.height, self.tilemap.tiles)
+        tilemap = self.current_location.tilemap
+        self.view.update_tilemap(tilemap.width, tilemap.height, tilemap.tiles)
         
         self.hero = Hero("John")
         self.view.update_hero_position(self.hero.x, self.hero.y)
@@ -58,7 +65,7 @@ class GameSession(IGameSession):
         self.hero.x += dx
         self.hero.y += dy
         
-        self.view.update_hero_position(self.hero.x, self.hero.y)
+        self.view.render()
 
     def move_down(self, event):
         self.move_hero(0, 1)
@@ -72,4 +79,11 @@ class GameSession(IGameSession):
         
     def move_right(self, event):
         self.move_hero(1, 0)
+
+    def change_location(self, loc_id: int):
+        loc = self.world.get_location_by_id(loc_id)
+        if loc is None:
+            return
+        self.current_location = loc
+        self.view.render(self.current_location, self.hero)
     
