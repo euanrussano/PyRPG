@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import random
 
-from tilemap.event import EventTile
+from tilemap.event import ChangeTileEvent, CompositeEvent, EventTile, ShowMessageEvent
 
 from .tile_ids import TREES, TileID
 from .tileset import Tile, Tileset, get_tileset
@@ -95,6 +95,11 @@ class TownTilemapFactory(TilemapFactory):
         if can_open_door:
             tiles[x+1][y] = tileset.get_tile(TileID.EMPTY)
             events[x+1][y].tile = tileset.get_tile(TileID.BUILDING_DOOR_CLOSED)
+            event = CompositeEvent([
+                ChangeTileEvent(tileset.get_tile(TileID.BUILDING_DOOR_OPEN)),
+                ShowMessageEvent("You opened the door")
+            ])
+            events[x+1][y].set_event(event)
         else:
             id = TileID.BUILDING_DOOR_OPEN if is_door_open else TileID.BUILDING_DOOR_CLOSED
             tiles[x+1][y] = tileset.get_tile(id)
@@ -137,6 +142,11 @@ class Tilemap:
         if not self.has_tile(x, y): 
             return Tile(TileID.EMPTY)
         return self.tiles[x][y]
+    
+    def get_event_tile(self, x: int, y: int):
+        if not self.has_tile(x, y): 
+            return EventTile()
+        return self.events[x][y]
     
     def is_blocked(self, new_x: int, new_y: int):
         if not self.has_tile(new_x, new_y): 

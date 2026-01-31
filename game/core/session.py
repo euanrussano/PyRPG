@@ -61,6 +61,8 @@ class GameSession(IGameSession):
         new_x = self.hero.x + dx
         new_y = self.hero.y + dy
         
+        # try and trigger event if there is one
+        self.try_trigger_event(new_x, new_y)
 
         if new_x < 0 or new_x >= self.current_location.tilemap.width:
             self._try_change_location(dx, dy)
@@ -111,5 +113,15 @@ class GameSession(IGameSession):
             hero.y = 0 if dy > 0 else tilemap.height - 1
 
         self.view.render(new_location, hero)
+
+    def try_trigger_event(self, x: int, y: int):
+        tilemap = self.current_location.tilemap
+        event_tile = tilemap.get_event_tile(x, y)
+        if event_tile.has_event():
+            event_tile.trigger(self)
+
+    def add_message(self, msg: str):
+        # TODO()
+        pass
 
     
