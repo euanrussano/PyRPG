@@ -16,3 +16,6 @@ class Hero:
 
     def add_diary_entry(self, entry):
         self.__diary.append(entry)
+
+    def add_gold(self, amount):
+        self.gold += amount

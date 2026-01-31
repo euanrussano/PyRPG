@@ -124,4 +124,8 @@ class GameSession(IGameSession):
         self.hero.add_diary_entry(msg)
         self.view.update_diary(self.hero)
 
+    def add_gold(self, amount: int):
+        self.hero.add_gold(amount)
+        self.view.update_hero_stats(self.hero)
+
     

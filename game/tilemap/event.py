@@ -42,6 +42,13 @@ class ChangeTileEvent(Event):
             self.owner.tile = self.tile
         
 
+class GiveGoldEvent(Event):
+    def __init__(self, amount: int):
+        super().__init__()
+        self.amount = amount
+
+    def trigger(self, session):
+        session.add_gold(self.amount)
 
 class EventTile:
     def __init__(self, tile: Optional[Tile] = None, event: Optional[Event] = None):

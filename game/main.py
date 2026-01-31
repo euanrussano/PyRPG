@@ -14,7 +14,7 @@ class GameScreen(tk.Tk):
     def __init__(self, viewport_width=10, viewport_height=10):
         super().__init__()
         self.title("PyRPG")
-        self.geometry("800x800")
+        self.geometry("1200x800")
         self.viewport = (viewport_width, viewport_height)
 
         self.hero_sprite = None

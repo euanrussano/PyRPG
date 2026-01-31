@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import random
 
-from tilemap.event import ChangeTileEvent, CompositeEvent, EventTile, ShowMessageEvent
+from tilemap.event import ChangeTileEvent, CompositeEvent, EventTile, GiveGoldEvent, ShowMessageEvent
 
 from .tile_ids import TREES, TileID
 from .tileset import Tile, Tileset, get_tileset
@@ -32,18 +32,36 @@ class TilemapFactory(ABC):
         return events
 
 class ForestTilemapFactory(TilemapFactory):
-    def create(self) -> 'Tilemap':
+    def create(self, place_random_chests:bool = False) -> 'Tilemap':
+        
+        random.seed(1)
+
+        width = 10
+        height = 10
         tileset: Tileset = get_tileset()
         tiles = []
-        for _ in range(10):    
+        events = self.create_empty_events(width, height)
+        for i in range(width):    
             row = []
-            for _ in range(10):
+            for j in range(height):
                 id = TileID.EMPTY
                 if random.random() < 0.3:
                     id = random.choice(TREES)
+                elif place_random_chests:
+                    if random.random() < 0.1:
+                        gold_amount = random.randint(1, 3)
+                        events[i][j].tile = tileset.get_tile(TileID.CHEST_CLOSED)
+                        event = CompositeEvent([
+                            ShowMessageEvent("You found a chest!"),
+                            GiveGoldEvent(gold_amount),
+                            ShowMessageEvent(f"You got {gold_amount} gold"),
+                            ChangeTileEvent(tileset.get_tile(TileID.EMPTY)),
+                        ])  
+                        events[i][j].set_event(event)
+                
                 row.append(tileset.get_tile(id))
             tiles.append(row)
-        return Tilemap(tiles)
+        return Tilemap(tiles, events)
 
 class TownTilemapFactory(TilemapFactory):
     def create(self) -> 'Tilemap':
