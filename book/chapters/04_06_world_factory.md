@@ -1,8 +1,3 @@
-Perfect, this fits *exactly* as a continuation of the previous lessons.
-Below is **Lesson 4.6**, written as a **hands-on coding tutorial**, guiding the reader step by step and explicitly mapping to the diff you shared.
-
----
-
 # 4.6 – Improving the World: Factory and Guard Clauses
 
 In the previous lesson, we connected our maps and allowed the hero to move between them. Our world is now functional — but the code can be improved.
