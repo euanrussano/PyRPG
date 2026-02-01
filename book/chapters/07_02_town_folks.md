@@ -1,4 +1,4 @@
-# 7.2 - Placing Town Folks
+# 7.2 - Placing Town Folks and Basic Interaction
 
 In this lesson, we're going to bring our town to life by adding NPCs (Non-Player Characters) that move around! We'll create "John the Greeter" who wanders randomly around town and greets anyone who bumps into him. This will demonstrate how our refactored event system enables dynamic, moving entities.
 

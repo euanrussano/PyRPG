@@ -42,7 +42,7 @@
 
 7 - Town Folks
 7.1 - Refactoring and cleanup - preparing for town folks
-7.2 - Placing town folks
+7.2 - Placing town folks and basic interaction
 7.3 - Interacting with Town Folks
 
 6 - Quests
