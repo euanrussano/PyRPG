@@ -5,7 +5,7 @@ from core.hero import Hero
 from core.itemdefinition import ItemRepository
 from core.session import GameSession, IGameSession
 from graphics.spritesheet import Spritesheet
-from tilemap.event import EventTile
+from tilemap.event import MapEvent
 from tilemap.tilemap import Tile
 from tilemap.tileset import get_tileset
 import config
@@ -116,7 +116,7 @@ class GameScreen(tk.Tk):
         for name, qty in aggregates.items():
             self.inventory_table.insert("", tk.END, values=(name, qty))
 
-    def update_tilemap(self, width: int, height: int, tiles: List[List[Tile]], events: List[List[EventTile]]):
+    def update_tilemap(self, width: int, height: int, tiles: List[List[Tile]], events: List[MapEvent]):
         self.canvas.delete(tk.ALL)
         
         canvas_height = self.canvas.winfo_height()
@@ -126,10 +126,10 @@ class GameScreen(tk.Tk):
                 tile = tiles[i][j]
                 self.draw_tile(tile, i, j)
 
-                # draw event on top
-                event_tile = events[i][j]
-                if event_tile.tile is not None:
-                    self.draw_tile(event_tile.tile, i, j)
+        for event in events:
+            tile = event.tile
+            if tile is not None:
+                self.draw_tile(tile, event.x, event.y)
 
     def draw_tile(self, tile: Tile, world_x: int, world_y: int):
         if tile.id != -1:

@@ -7,7 +7,7 @@ from tilemap.tile_ids import TileID
 
 class Event(ABC):
     def __init__(self):
-        self.owner: Optional['EventTile'] = None
+        self.owner: Optional['MapEvent'] = None
     @abstractmethod
     def trigger(self, session):
         pass
@@ -117,8 +117,10 @@ class IfEvent(Event):
             self.else_event.trigger(session)
 
 
-class EventTile:
-    def __init__(self, tile: Optional[Tile] = None, event: Optional[Event] = None, run_once:bool=True):
+class MapEvent:
+    def __init__(self, x: int, y: int, tile: Optional[Tile] = None, event: Optional[Event] = None, run_once:bool=True):
+        self.x = x
+        self.y = y
         self.tile = tile
         self.__event = None
         self.run_once = run_once

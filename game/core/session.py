@@ -118,9 +118,11 @@ class GameSession(IGameSession):
 
     def try_trigger_event(self, x: int, y: int):
         tilemap = self.current_location.tilemap
-        event_tile = tilemap.get_event_tile(x, y)
-        if event_tile.has_event():
-            event_tile.trigger(self)
+        map_event = tilemap.get_map_event(x, y)
+        if not map_event: return
+
+        if map_event.has_event():
+            map_event.trigger(self)
 
             self.view.render(self.current_location, self.hero)
 
