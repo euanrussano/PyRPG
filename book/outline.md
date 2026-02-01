@@ -41,7 +41,7 @@
 6.2 Use the key to unlock a door
 
 7 - Town Folks
-7.1 - Creating the Town map
+7.1 - Refactoring and cleanup - preparing for town folks
 7.2 - Placing town folks
 7.3 - Interacting with Town Folks
 
