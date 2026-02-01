@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List
 import random
 
-from tilemap.event import ChangeTileEvent, CompositeEvent, EventTile, GiveGoldEvent, ShowMessageEvent
+from core.itemdefinition import ItemRepository
+from tilemap.event import ChangeTileEvent, CompositeEvent, EventTile, GiveGoldEvent, ShowMessageEvent, AddItemEvent
 
 from .tile_ids import TREES, TileID
 from .tileset import Tile, Tileset, get_tileset
@@ -34,7 +35,7 @@ class TilemapFactory(ABC):
         return events
 
 class ForestTilemapFactory(TilemapFactory):
-    def create(self, place_random_chests:bool = False, place_sign:bool = False) -> 'Tilemap':
+    def create(self, place_random_chests:bool = False, place_sign:bool = False, place_key:bool = False) -> 'Tilemap':
         
         random.seed(1)
 
@@ -71,6 +72,26 @@ class ForestTilemapFactory(TilemapFactory):
                 
                 row.append(tileset.get_tile(id))
             tiles.append(row)
+
+        if place_key:
+            is_key_placed = False
+            max_tries = 100
+            trial = 0
+            while not is_key_placed:
+                trial += 1
+                if trial > max_tries:
+                    break
+                x = random.randint(0, width-1)
+                y = random.randint(0, height-1)
+                if tiles[x][y].id == TileID.EMPTY:
+                    events[x][y].tile = tileset.get_tile(TileID.KEY)
+                    event = CompositeEvent([
+                        ShowMessageEvent("You found a key!"),
+                        ChangeTileEvent(tileset.get_tile(TileID.EMPTY)),
+                        AddItemEvent(ItemRepository.get_instance().find_by_id(TileID.KEY))
+                    ])
+                    events[x][y].set_event(event)
+                    is_key_placed = True
         return Tilemap(tiles, events)
 
 class TownTilemapFactory(TilemapFactory):

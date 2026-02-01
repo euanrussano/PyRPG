@@ -1,3 +1,8 @@
+from typing import List
+
+from core.itemdefinition import ItemInstance
+
+
 class Hero:
     def __init__(self, name):
         self.name = name
@@ -9,6 +14,11 @@ class Hero:
         self.x = 5
         self.y = 5
         self.__diary = []
+        self.__inventory: List[ItemInstance] = []
+
+    @property
+    def inventory(self):
+        return self.__inventory
 
     @property
     def diary(self):
@@ -19,3 +29,6 @@ class Hero:
 
     def add_gold(self, amount):
         self.gold += amount
+
+    def add_item(self, item: ItemInstance):
+        self.__inventory.append(item)

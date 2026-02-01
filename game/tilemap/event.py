@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
+from core.itemdefinition import ItemDefinition
 from tilemap.tileset import Tile
 
 class Event(ABC):
@@ -49,6 +50,14 @@ class GiveGoldEvent(Event):
 
     def trigger(self, session):
         session.add_gold(self.amount)
+
+class AddItemEvent:
+    def __init__(self, item: ItemDefinition):
+        super().__init__()
+        self.item = item
+
+    def trigger(self, session):
+        session.add_item(self.item)
 
 class EventTile:
     def __init__(self, tile: Optional[Tile] = None, event: Optional[Event] = None, run_once:bool=True):

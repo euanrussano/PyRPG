@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from tilemap.tilemap import Tilemap, TilemapLoader
+from .itemdefinition import ItemDefinition, ItemInstance
 from .world import Location, World, WorldFactory
 if TYPE_CHECKING:
     from main import GameScreen
@@ -120,6 +121,8 @@ class GameSession(IGameSession):
         if event_tile.has_event():
             event_tile.trigger(self)
 
+            self.view.render(self.current_location, self.hero)
+
     def add_message(self, msg: str):
         self.hero.add_diary_entry(msg)
         self.view.update_diary(self.hero)
@@ -127,5 +130,10 @@ class GameSession(IGameSession):
     def add_gold(self, amount: int):
         self.hero.add_gold(amount)
         self.view.update_hero_stats(self.hero)
+
+    def add_item(self, item: ItemDefinition):
+        item_instance = ItemInstance(item)
+        self.hero.add_item(item_instance)
+        self.view.update_inventory(self.hero)
 
     

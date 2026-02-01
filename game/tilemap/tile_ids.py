@@ -39,7 +39,8 @@ class TileID(IntEnum):
 
     CHEST_CLOSED = 57
     SIGN = 31
-
+    KEY = 90
+    RING = 89
     
 
 # Helper groups

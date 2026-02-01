@@ -37,8 +37,8 @@
 
 5 - Items
 5.1 Creating the Game Item Builder
-5.2 Finding a lost key in the farm
-5.2 Hero Inventory
+5.2 Finding a lost key in the farm and picking it up (Hero Inventory)
+5.2 Use the key to unlock a door
 
 7 - Town Folks
 7.1 - Creating the Town map

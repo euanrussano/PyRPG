@@ -10,6 +10,8 @@ from tilemap.tilemap import Tile
 from tilemap.tileset import get_tileset
 import config
 from core.world import Location
+from tkinter import ttk
+
 
 class GameScreen(tk.Tk):
     def __init__(self, viewport_width=10, viewport_height=10):
@@ -102,6 +104,18 @@ class GameScreen(tk.Tk):
         for entry in hero.diary:
             self.diary_listbox.insert(tk.END, entry)
 
+    def update_inventory(self, hero: Hero):
+        print("Updating inventory")
+        self.inventory_table.delete(*self.inventory_table.get_children())
+        aggregates = {}
+        for item in hero.inventory:
+            if item.name in aggregates:
+                aggregates[item.name] += 1
+            else:
+                aggregates[item.name] = 1
+        for name, qty in aggregates.items():
+            self.inventory_table.insert("", tk.END, values=(name, qty))
+
     def update_tilemap(self, width: int, height: int, tiles: List[List[Tile]], events: List[List[EventTile]]):
         self.canvas.delete(tk.ALL)
         
@@ -158,7 +172,7 @@ class GameScreen(tk.Tk):
         self.create_center_top_panel(center_top_panel)
         self.create_left_top_panel(left_top_panel)
         self.create_right_top_panel(right_top_panel)
-        # self.create_left_bottom_panel(left_bottom_panel)
+        self.create_left_bottom_panel(left_bottom_panel)
         # self.create_center_bottom_panel(center_bottom_panel)
 
     def create_left_top_panel(self, parent):
@@ -198,6 +212,16 @@ class GameScreen(tk.Tk):
     def create_right_top_panel(self, parent):
         self.diary_listbox = tk.Listbox(parent)
         self.diary_listbox.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
+    def create_left_bottom_panel(self, parent):
+        columns = ("name", "qty")
+        self.inventory_table = ttk.Treeview(parent, columns=columns, show="headings")
+        # Define column headers
+        self.inventory_table.heading("name", text="Name")
+        self.inventory_table.heading("qty", text="Qty")
+        self.inventory_table.pack(fill=tk.BOTH, expand=True)
+
+
 
 if __name__ == "__main__":
     ItemRepository.get_instance().load_data()

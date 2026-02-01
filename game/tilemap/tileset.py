@@ -68,10 +68,21 @@ class Tileset:
 
             # Sign (non-walkable)
             (TileID.SIGN, False),
+
+            # Key (walkable)
+            (TileID.KEY, True),
+
+            # Ring (walkable)
+            (TileID.RING, True),
         ]
         
         for tile_id, walkable in tiles_data:
             self.tiles[tile_id] = Tile(tile_id, walkable)
+
+        # validate that all tiles are registered
+        for tile_id in TileID:
+            if tile_id not in self.tiles:
+                raise ValueError(f"{type(self)}: Tile {tile_id} is not registered")
 
     def get_tile(self, tile_id: TileID) -> Tile:
         """Get tile by its ID"""
