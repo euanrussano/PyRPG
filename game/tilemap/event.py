@@ -59,11 +59,61 @@ class AddItemEvent:
     def trigger(self, session):
         session.add_item(self.item)
 
+class DeactivateEvent(Event):
+    def __init__(self):
+        super().__init__()
+
+    def trigger(self, session):
+        if self.owner:
+            self.owner.is_active = False
+
+class Condition(ABC):
+    @abstractmethod
+    def is_met(self, session) -> bool:
+        pass
+
+from tilemap.tile_ids import TileID
+
+class HasItemCondition(Condition):
+    def __init__(self, item_id: TileID):
+        self.item_id = item_id
+
+    def is_met(self, session) -> bool:
+        for item in session.hero.inventory:
+            if item.item_definition.id == self.item_id:
+                return True
+        return False
+
+class IfEvent(Event):
+    def __init__(
+        self,
+        condition: Condition,
+        then_event: Event,
+        else_event: Event | None = None
+    ):
+        super().__init__()
+        self.condition = condition
+        self.then_event = then_event
+        self.else_event = else_event
+
+    def trigger(self, session):
+        # ensure child events know who owns the tile
+        self.then_event.owner = self.owner
+        if self.else_event:
+            self.else_event.owner = self.owner
+
+        if self.condition.is_met(session):
+            self.then_event.trigger(session)
+        elif self.else_event is not None:
+            self.else_event.trigger(session)
+
+
 class EventTile:
     def __init__(self, tile: Optional[Tile] = None, event: Optional[Event] = None, run_once:bool=True):
         self.tile = tile
         self.__event = None
         self.run_once = run_once
+        self.is_active = True
 
         if event is not None:
             self.set_event(event)
@@ -82,6 +132,8 @@ class EventTile:
         return self.__event is not None
     
     def trigger(self, session):
+        if not self.is_active: return
+
         if self.__event is not None:
             self.__event.trigger(session)
 

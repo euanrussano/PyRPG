@@ -3,7 +3,8 @@ from typing import List
 import random
 
 from core.itemdefinition import ItemRepository
-from tilemap.event import ChangeTileEvent, CompositeEvent, EventTile, GiveGoldEvent, ShowMessageEvent, AddItemEvent
+from tilemap.event import ChangeTileEvent, CompositeEvent, EventTile, GiveGoldEvent, ShowMessageEvent, AddItemEvent, \
+    IfEvent, HasItemCondition, DeactivateEvent
 
 from .tile_ids import TREES, TileID
 from .tileset import Tile, Tileset, get_tileset
@@ -94,6 +95,14 @@ class ForestTilemapFactory(TilemapFactory):
                     is_key_placed = True
         return Tilemap(tiles, events)
 
+from enum import Enum, auto
+
+class DoorType(Enum):
+    OPEN = auto()        # open passage
+    CLOSED = auto()      # closed passage
+    SIMPLE = auto()      # opens by bumping
+    LOCKED = auto()      # needs a key
+
 class TownTilemapFactory(TilemapFactory):
     def create(self) -> 'Tilemap':
         tileset: Tileset = get_tileset()
@@ -110,15 +119,15 @@ class TownTilemapFactory(TilemapFactory):
             events.append(event_row)
         
         # create 4 buildings
-        self.create_building(tiles, events, 2, 2, 4, 4, True, True)
-        self.create_building(tiles, events, 7, 2, 3, 3)
+        self.create_building(tiles, events, 2, 2, 4, 4, door_type=DoorType.SIMPLE)
+        self.create_building(tiles, events, 7, 2, 3, 3, door_type=DoorType.LOCKED)
         self.create_building(tiles, events, 2, 7, 3, 3)
         self.create_building(tiles, events, 7, 7, 3, 3)
         
     
         return Tilemap(tiles, events)
     
-    def create_building(self, tiles: List[List['Tile']], events: List[List['EventTile']], x: int, y: int, width: int, height: int, is_door_open:bool = False, can_open_door:bool = False):
+    def create_building(self, tiles: List[List['Tile']], events: List[List['EventTile']], x: int, y: int, width: int, height: int, door_type: DoorType = DoorType.CLOSED):
         """
         Create a building with y-axis pointing up
         (x, y) is the bottom-left corner of the building
@@ -141,7 +150,7 @@ class TownTilemapFactory(TilemapFactory):
             tiles[i][y+height-1] = tileset.get_tile(TileID.BUILDING_WALL_HORIZONTAL)  # Top wall
 
         # Door on the bottom wall
-        if can_open_door:
+        if door_type == DoorType.SIMPLE:
             tiles[x+1][y] = tileset.get_tile(TileID.EMPTY)
             events[x+1][y].tile = tileset.get_tile(TileID.BUILDING_DOOR_CLOSED)
             event = CompositeEvent([
@@ -149,9 +158,27 @@ class TownTilemapFactory(TilemapFactory):
                 ShowMessageEvent("You opened the door")
             ])
             events[x+1][y].set_event(event)
-        else:
-            id = TileID.BUILDING_DOOR_OPEN if is_door_open else TileID.BUILDING_DOOR_CLOSED
+        elif door_type == DoorType.CLOSED:
+            id = TileID.BUILDING_DOOR_CLOSED
             tiles[x+1][y] = tileset.get_tile(id)
+        elif door_type == DoorType.OPEN:
+            id = TileID.BUILDING_DOOR_OPEN
+            tiles[x + 1][y] = tileset.get_tile(id)
+        elif door_type == DoorType.LOCKED:
+            tiles[x + 1][y] = tileset.get_tile(TileID.EMPTY)
+            events[x + 1][y].tile = tileset.get_tile(TileID.BUILDING_DOOR_CLOSED)
+            event = IfEvent(
+                condition=HasItemCondition(TileID.KEY),
+                then_event=CompositeEvent([
+                    ShowMessageEvent("You unlocked the door."),
+                    ChangeTileEvent(tileset.get_tile(TileID.BUILDING_DOOR_OPEN)),
+                    DeactivateEvent()
+                ]),
+                else_event=ShowMessageEvent("The door is locked.")
+            )
+
+            events[x+1][y].set_event(event)
+            events[x+1][y].run_once = False
         
         # Window on the bottom wall if there's room
         if x+2 < x+width:
