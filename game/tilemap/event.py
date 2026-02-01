@@ -120,10 +120,15 @@ class IfEvent(Event):
             self.else_event.trigger(session)
 
 class MovementStrategy(ABC):
-    pass
+    @abstractmethod
+    def decide(self, owner: 'MapEvent') -> Tuple[int, int]:
+        pass
 
 class RandomMovementStrategy(MovementStrategy):
-    pass
+    def decide(self, owner: 'MapEvent') -> Tuple[int, int]:
+        dx = random.randint(-1, 1)
+        dy = random.randint(-1, 1)
+        return dx, dy
 
 class MoveSpeed(IntEnum):
     SLOW = 1000
@@ -177,12 +182,15 @@ class MapEvent:
 
         self.move_timer = 0
 
-        dx = random.randint(-1,1)
-        dy = random.randint(-1, 1)
+        dx = 0
+        dy = 0
+        if self.movement:
+            dx, dy = self.movement.decide(self)
 
         if dx != 0:
             return dx, 0
         else:
             return 0, dy
+
 
 

@@ -68,11 +68,16 @@ class GameSession(IGameSession):
                 dx = 0
                 dy = 0
 
-            # do not move if hero is adjacent or if overlaps
+            # do not move if hero is adjacent to current position
+            if self.hero.x in range(map_event.x-1, map_event.x+2) and self.hero.y in range(map_event.y-1, map_event.y+2):
+                dx = 0
+                dy = 0
+                
+            # do not move if hero overlaps
             if self.hero.x in range(nx-1, nx+2) and self.hero.y in range(ny-1, ny+2):
                 dx = 0
                 dy = 0
-        
+
 
             map_event.x += dx
             map_event.y += dy
