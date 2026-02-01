@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from core.itemdefinition import ItemDefinition
 from tilemap.tileset import Tile
+from tilemap.tile_ids import TileID
 
 class Event(ABC):
     def __init__(self):
@@ -58,6 +59,14 @@ class AddItemEvent:
 
     def trigger(self, session):
         session.add_item(self.item)
+
+class RemoveItemEvent:
+    def __init__(self, id: TileID):
+        super().__init__()
+        self.item_id = id
+
+    def trigger(self, session):
+        session.remove_item(self.item_id)
 
 class DeactivateEvent(Event):
     def __init__(self):

@@ -1,6 +1,7 @@
 from typing import List
 
-from core.itemdefinition import ItemInstance
+from core.itemdefinition import ItemInstance, ItemDefinition
+from tilemap.tile_ids import TileID
 
 
 class Hero:
@@ -32,3 +33,14 @@ class Hero:
 
     def add_item(self, item: ItemInstance):
         self.__inventory.append(item)
+
+    def remove_item(self, item_id: TileID) -> bool:
+        item_to_remove = None
+        for item_instance in self.__inventory:
+            if item_instance.item_definition.id == item_id:
+                item_to_remove = item_instance
+                break
+        if item_to_remove:
+            self.__inventory.remove(item_to_remove)
+            return True
+        return False

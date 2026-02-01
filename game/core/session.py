@@ -2,6 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+from tilemap.tile_ids import TileID
 from tilemap.tilemap import Tilemap, TilemapLoader
 from .itemdefinition import ItemDefinition, ItemInstance
 from .world import Location, World, WorldFactory
@@ -134,6 +135,10 @@ class GameSession(IGameSession):
     def add_item(self, item: ItemDefinition):
         item_instance = ItemInstance(item)
         self.hero.add_item(item_instance)
+        self.view.update_inventory(self.hero)
+
+    def remove_item(self, item_id: TileID):
+        self.hero.remove_item(item_id)
         self.view.update_inventory(self.hero)
 
     

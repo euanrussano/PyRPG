@@ -4,7 +4,7 @@ import random
 
 from core.itemdefinition import ItemRepository
 from tilemap.event import ChangeTileEvent, CompositeEvent, EventTile, GiveGoldEvent, ShowMessageEvent, AddItemEvent, \
-    IfEvent, HasItemCondition, DeactivateEvent
+    IfEvent, HasItemCondition, DeactivateEvent, RemoveItemEvent
 
 from .tile_ids import TREES, TileID
 from .tileset import Tile, Tileset, get_tileset
@@ -170,6 +170,7 @@ class TownTilemapFactory(TilemapFactory):
             event = IfEvent(
                 condition=HasItemCondition(TileID.KEY),
                 then_event=CompositeEvent([
+                    RemoveItemEvent(TileID.KEY),
                     ShowMessageEvent("You unlocked the door."),
                     ChangeTileEvent(tileset.get_tile(TileID.BUILDING_DOOR_OPEN)),
                     DeactivateEvent()
