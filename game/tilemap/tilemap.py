@@ -4,7 +4,7 @@ import random
 
 from core.itemdefinition import ItemRepository
 from tilemap.event import ChangeTileEvent, CompositeEvent, MapEvent, GiveGoldEvent, ShowMessageEvent, AddItemEvent, \
-    IfEvent, HasItemCondition, DeactivateEvent, RemoveItemEvent
+    IfEvent, HasItemCondition, DeactivateEvent, RemoveItemEvent, RandomMovementStrategy, MovementStrategy
 
 from .tile_ids import TREES, TileID
 from .tileset import Tile, Tileset, get_tileset
@@ -115,6 +115,10 @@ class TownTilemapFactory(TilemapFactory):
         self.create_building(tiles, events, 7, 2, 3, 3, door_type=DoorType.LOCKED)
         self.create_building(tiles, events, 2, 7, 3, 3)
         self.create_building(tiles, events, 7, 7, 3, 3)
+
+        # create john the greeter
+        folk = self.create_folk(1, 1, tile_id=TileID.FOLK_1, greet="Hey I'm John. Nice day btw...", movement = RandomMovementStrategy())
+        events.append(folk)
         
     
         return Tilemap(tiles, events)
@@ -180,8 +184,16 @@ class TownTilemapFactory(TilemapFactory):
         # Window on the bottom wall if there's room
         if x+2 < x+width:
             tiles[x+2][y] = tileset.get_tile(TileID.BUILDING_WINDOW)
-        
-        
+
+    def create_folk(self, x: int, y: int, tile_id: TileID, greet: str, movement: MovementStrategy) -> MapEvent:
+        map_event = MapEvent(x, y)
+        map_event.tile = get_tileset().get_tile(tile_id)
+        map_event.run_once = False
+        event = ShowMessageEvent(greet)
+        map_event.set_event(event)
+        map_event.movement = movement
+        return map_event
+
 
 class TilemapLoader:
     def load(self, filename: str) -> 'Tilemap':

@@ -1,9 +1,12 @@
+import random
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from enum import IntEnum
+from typing import List, Optional, Tuple
 
 from core.itemdefinition import ItemDefinition
-from tilemap.tileset import Tile
 from tilemap.tile_ids import TileID
+from tilemap.tileset import Tile
+
 
 class Event(ABC):
     def __init__(self):
@@ -116,6 +119,16 @@ class IfEvent(Event):
         elif self.else_event is not None:
             self.else_event.trigger(session)
 
+class MovementStrategy(ABC):
+    pass
+
+class RandomMovementStrategy(MovementStrategy):
+    pass
+
+class MoveSpeed(IntEnum):
+    SLOW = 1000
+    NORMAL = 500
+    FAST = 300
 
 class MapEvent:
     def __init__(self, x: int, y: int, tile: Optional[Tile] = None, event: Optional[Event] = None, run_once:bool=True):
@@ -125,6 +138,10 @@ class MapEvent:
         self.__event = None
         self.run_once = run_once
         self.is_active = True
+
+        self.movement: MovementStrategy | None = None
+        self.move_speed = MoveSpeed.NORMAL
+        self.move_timer = 0
 
         if event is not None:
             self.set_event(event)
@@ -151,3 +168,21 @@ class MapEvent:
         # for now events run once
         if self.run_once:
             self.__event = None
+
+    def update(self, delta: int) -> Tuple[int, int]:
+        if not self.movement: return 0,0
+
+        self.move_timer += delta
+        if self.move_timer < self.move_speed: return 0, 0
+
+        self.move_timer = 0
+
+        dx = random.randint(-1,1)
+        dy = random.randint(-1, 1)
+
+        if dx != 0:
+            return dx, 0
+        else:
+            return 0, dy
+
+

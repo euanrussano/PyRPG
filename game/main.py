@@ -12,8 +12,10 @@ import config
 from core.world import Location
 from tkinter import ttk
 
+update_interval = 100
 
 class GameScreen(tk.Tk):
+
     def __init__(self, viewport_width=10, viewport_height=10):
         super().__init__()
         self.title("PyRPG")
@@ -82,6 +84,11 @@ class GameScreen(tk.Tk):
         x = world_x * self.tile_size
         y = height - world_y * self.tile_size -self.tile_size
         return (x, y)
+
+    def update(self):
+        self.session.update(update_interval)
+
+        self.after(update_interval, self.update)
 
     def update_hero_position(self, world_x: int, world_y: int):
         """Update hero sprite position"""
@@ -226,6 +233,7 @@ class GameScreen(tk.Tk):
 if __name__ == "__main__":
     ItemRepository.get_instance().load_data()
     view = GameScreen()
+    view.after(update_interval, view.update)
     view.mainloop()
 
     

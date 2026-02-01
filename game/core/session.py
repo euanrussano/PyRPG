@@ -34,6 +34,10 @@ class IGameSession(ABC):
     def move_right(self, event):
         pass
 
+    @abstractmethod
+    def update(self, delta: int):
+        pass
+
 
 class GameSession(IGameSession):
     def __init__(self, view: GameScreen) -> None:
@@ -48,6 +52,34 @@ class GameSession(IGameSession):
     def start(self):
         self.view.update_hero_stats(self.hero)
         self.view.render(self.current_location, self.hero)
+
+    def update(self, delta: int):
+        for map_event in self.current_location.tilemap.events:
+            dx, dy = map_event.update(delta)
+            nx = map_event.x + dx
+            ny = map_event.y + dy
+
+            if nx < 0 or nx >= self.current_location.tilemap.width:
+                dx = 0
+            elif ny < 0 or ny >= self.current_location.tilemap.height:
+                dy = 0
+
+            if self.current_location.tilemap.is_blocked(nx, ny):
+                dx = 0
+                dy = 0
+
+            # do not move if hero is adjacent or if overlaps
+            if self.hero.x in range(nx-1, nx+2) and self.hero.y in range(ny-1, ny+2):
+                dx = 0
+                dy = 0
+        
+
+            map_event.x += dx
+            map_event.y += dy
+
+            self.view.render(self.current_location, self.hero)
+
+
         
     def move_hero(self, dx: int, dy: int):
         if self.hero is None:
